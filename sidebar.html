@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+    <style>
+      div.results {
+        font-family: "Arial", "Helvetica", sans-serif;
+        font-size: 0.9em;
+      }
+      div.box {
+        border: 1px solid silver;
+        border-radius: 1px;
+        margin: 2px 0;
+        padding: 0.25em;
+      }
+      div.category_list {
+        border-radius: 2px;
+        margin-top: 3px;
+      }
+      div.category {
+        font-weight: 200;
+        padding: 3px;
+      }
+      div.category_list.dups {
+        color: #6a1b9a;
+        background-color: #f3e5f5;
+      }
+      div.category_list.dups .category {
+        color: white;
+        background-color: #9c27b0;
+      }
+      div.category_list.uniques {
+        color: #004d40;
+        background-color: #e0f2f1;
+      }
+      div.category_list.uniques .category {
+        color: white;
+        background-color: #009688;
+      }
+      div.category_list.shared {
+        color: #e65100;
+        background-color: #fff3e0;
+      }
+      div.category_list.shared .category {
+        color: white;
+        background-color: #ff9800;
+      }
+      div.title {
+        font-size: 1em;
+        font-weight: bold;
+        text-align: center;
+      }
+      div.item {
+        padding: 0 0.25em;
+      }
+      span.count {
+        float: right;
+        font-size: 0.9em;
+        vertical-align: middle;
+      }
+      input.compare_button {
+        background: #4d90fe;
+        color: white;
+        width: 60%;
+      }
+      input#clear_button {
+        width: 40%;
+      }
+    </style>
+  </head>
+  <body>
+    <!--<form id="aForm" onSubmit="handleFormSubmit()">-->
+    <form id="aForm">
+      <div id="control_box"></div>
+      <input type="button" class="compare_button" value="Compare" onClick="handleFormSubmit()"/><input type="button" id="clear_button" value="Clear" onClick="clearResults()" disabled/>
+      <div id="results_box"></div>
+    </form>
+    <script>
+      function setupForm() {
+        google.script.run.withSuccessHandler(updateSheetLists).getSheets();
+      }
+      function enableClearButton(enable) {
+        document.getElementById("clear_button").disabled = !enable;
+      }
+      function updateSheetLists(sheets) {
+        var form = document.querySelector('form#aForm #control_box');
+        var htmlString = "<div>";
+        htmlString += "<div><select id='col1_selector'>";
+        htmlString += updateSheetList(sheets,"col1");
+        htmlString += "</select>";
+        htmlString += "<select id='col1_skip'>";
+        htmlString += buildCounter(0,5);
+        htmlString += "</select></div>";
+        htmlString += "<div><select id='col2_selector'>";
+        htmlString += updateSheetList(sheets,"col2");
+        htmlString += "</select>";
+        htmlString += "<select id='col2_skip'>";
+        htmlString += buildCounter(0,5);
+        htmlString += "</select></div>";
+        htmlString += "</div>";
+        form.insertAdjacentHTML('beforeend',htmlString);
+      }
+      function buildCounter(low,high) {
+        var returnString = '';
+        while(low<=high) {
+          var selected = (low==1) ? "selected='true'" : "";
+          returnString += "<option value='" + low + "' " + selected + ">Skip " + low++ + " rows</option>";
+        };
+        return returnString;
+      }
+      function buildOption(compareName,sheetName,setNumber,itemNumber,colName) {
+        return "<option value='" + compareName + "_" + setNumber + "_" + itemNumber + "_" + colName + "'>" + sheetName + " | " + colName + "</option>";
+      }
+      function updateSheetList(sheets,compareCol) {
+        var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        var sheetNames = Object.keys(sheets);
+        var returnString = '';
+        console.log(JSON.stringify(sheetNames));
+               
+        sheetNames.forEach(function(v,i,a) {
+          for(var c=0; c<=letters.indexOf(sheets[v]); c++) {
+            returnString += buildOption(compareCol,v,i,c,letters[c]);
+          }
+        });
+        return returnString;
+      }
+      function drawResult(title,list,classType) {
+        var htmlString = "<div class='category_list " + classType + "'><div class='category'>" + title + " <span class='count'>(" + list.length + ")</span></div>";
+        list.forEach(function(v,i,a) {
+          htmlString += "<div class='item'>" + v + "</div>";
+        });
+        htmlString += "</div>";
+        return htmlString;
+      }
+      function drawCompareResults(results) {
+        var resultsBox = document.querySelector('#results_box');
+        //console.log(JSON.stringify(results));
+        var htmlString = "<div class='results'>";
+        htmlString += "<div class='box'><div class='title'>" + results.remote.sheet + " " + results.remote.col + "</div>";
+        htmlString += drawResult("Duplicate Entries",results.remote.dups,"dups");
+        htmlString += drawResult("Unique Entries",results.remote.uniq,"uniques");
+        htmlString += drawResult("Shared Entries",results.remote.shared,"shared");
+        htmlString += "</div>";
+        htmlString += "<div class='box'><div class='title'>" + results.local.sheet + " " + results.local.col + "</div>";
+        htmlString += drawResult("Duplicate Entries",results.local.dups,"dups");
+        htmlString += drawResult("Unique Entries",results.local.uniq,"uniques");
+        htmlString += drawResult("Shared Entries",results.local.shared,"shared");        
+        htmlString += "</div>";
+        htmlString += "</div>";
+        resultsBox.insertAdjacentHTML('beforeend',htmlString);        
+      }
+      function clearResults() {
+        document.getElementById("results_box").innerHTML = "";
+        google.script.run.clearFormat();
+        enableClearButton(false);
+      }
+      function handleResults(results) {
+        drawCompareResults(results);
+//        setResultTriggers(results);
+        google.script.run.highlightResults(results);
+        enableClearButton(true);
+      }
+      function handleFormSubmit() {
+        var col1Selected = document.getElementById('col1_selector');
+        var col2Selected = document.getElementById('col2_selector');
+        
+        var selected1 = col1Selected.options[col1Selected.selectedIndex].text;
+        var selected2 = col2Selected.options[col2Selected.selectedIndex].text;
+        
+        var sheet1 = selected1.split("|")[0].trim();
+        var sheet2 = selected2.split("|")[0].trim();
+        var col1 = selected1.split("|")[1].trim();
+        var col2 = selected2.split("|")[1].trim();
+        var skipCounter1 = document.getElementById('col1_skip');
+        var skipCounter2 = document.getElementById('col2_skip');
+        var skip1 = skipCounter1.options[skipCounter1.selectedIndex].value;
+        var skip2 = skipCounter2.options[skipCounter2.selectedIndex].value;
+        google.script.run.withSuccessHandler(handleResults).compare(sheet1,col1,skip1,sheet2,col2,skip2);
+      }
+      setupForm();
+    </script>
+  </body>
+</html>
