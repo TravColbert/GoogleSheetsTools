@@ -21,8 +21,10 @@ function highlightResults(results) {
   var highlightControl = [
     ["remote","local"],[
       {name:"dups",style:{"setFontColor":"#6a1b9a","setBackground":"#f3e5f5"}},
-      {name:"uniq",style:{"setFontColor":"#004d40","setBackground":"#e0f2f1"}},
-      {name:"shared",style:{"setFontColor":"#e65100","setBackground":"#fff3e0"}}
+      //{name:"uniq",style:{"setFontColor":"#004d40","setBackground":"#e0f2f1"}},
+      //{name:"shared",style:{"setFontColor":"#e65100","setBackground":"#fff3e0"}},
+      {name:"uniq",style:{"setFontColor":"#00bfa5","setFontWeight":"bold"}},
+      {name:"shared",style:{"setFontColor":"#ff6d00","setFontWeight":"bold"}}
     ]
   ];
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -64,7 +66,6 @@ function highlightCell(sheet,x,locations,style) {
     var styles = Object.keys(style);
     styles.forEach(function(v,i,a) {
       cell[v](style[v]);
-      //cell.setFontColor(style);
     });
   }
 }
