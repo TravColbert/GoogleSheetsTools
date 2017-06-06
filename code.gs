@@ -28,6 +28,7 @@ function highlightResults(results) {
     ]
   ];
   var ss = SpreadsheetApp.getActiveSpreadsheet();
+  clearFormat(ss);
   
   highlightControl[0].forEach(function(category) {
     //var st = ss.getSheetByName(results.remote.sheet);
@@ -69,8 +70,8 @@ function highlightCell(sheet,x,locations,style) {
     });
   }
 }
-function clearFormat() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+function clearFormat(ss) {
+  ss = (!ss) ? SpreadsheetApp.getActiveSpreadsheet() : ss;
   ss.getSheets().forEach(function(v,i,a) {
     Logger.log("Clearing sheet " + v.getName());
     clearSheet(v);

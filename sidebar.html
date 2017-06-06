@@ -70,7 +70,6 @@
     </style>
   </head>
   <body>
-    <!--<form id="aForm" onSubmit="handleFormSubmit()">-->
     <form id="aForm">
       <div id="control_box"></div>
       <input type="button" class="compare_button" value="Compare" onClick="handleFormSubmit()"/><input type="button" id="clear_button" value="Clear" onClick="clearResults()" disabled/>
@@ -135,6 +134,7 @@
       }
       function drawCompareResults(results) {
         var resultsBox = document.querySelector('#results_box');
+        resultsBox.innerHTML = "";
         //console.log(JSON.stringify(results));
         var htmlString = "<div class='results'>";
         htmlString += "<div class='box'><div class='title'>" + results.remote.sheet + " " + results.remote.col + "</div>";
