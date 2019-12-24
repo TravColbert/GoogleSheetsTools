@@ -14,6 +14,18 @@
         margin: 2px 0;
         padding: 0.25em;
       }
+      .column {
+        display: flex;
+        flex-direction: column;
+      }
+      .row {
+        display: flex;
+        flex-direction: row;
+      }
+      div#button_box {
+        display: flex;
+        flex-direction: row;
+      }
       div.category_list {
         border-radius: 2px;
         margin-top: 3px;
@@ -54,6 +66,10 @@
       div.item {
         padding: 0 0.25em;
       }
+      .column_selector {
+        display: flex;
+        flex: 1 0 auto;
+      }
       span.count {
         float: right;
         font-size: 0.9em;
@@ -70,8 +86,8 @@
     </style>
   </head>
   <body>
-    <form id="aForm">
-      <div id="control_box"></div>
+    <form id="compareForm">
+      <div id="control_box" class="column"></div>
       <div id="button_box">
         <input type="button" id="compare_button" value="Compare" onClick="handleFormSubmit()"/>
         <input type="button" id="clear_button" value="Clear" onClick="clearResults()" disabled/>
@@ -86,15 +102,15 @@
         document.getElementById("clear_button").disabled = !enable;
       }
       function updateSheetLists(sheets) {
-        var form = document.querySelector('form#aForm #control_box');
+        var form = document.querySelector('form#compareForm #control_box');
         var htmlString = "<div>";
-        htmlString += "<div><select id='col1_selector'>";
+        htmlString += "<div class='row'><select id='col1_selector' class='column_selector'>";
         htmlString += updateSheetList(sheets,"col1");
         htmlString += "</select>";
         htmlString += "<select id='col1_skip'>";
         htmlString += buildCounter(0,5);
         htmlString += "</select></div>";
-        htmlString += "<div><select id='col2_selector'>";
+        htmlString += "<div class='row'><select id='col2_selector' class='column_selector'>";
         htmlString += updateSheetList(sheets,"col2");
         htmlString += "</select>";
         htmlString += "<select id='col2_skip'>";
@@ -118,8 +134,8 @@
         var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         var sheetNames = Object.keys(sheets);
         var returnString = '';
-        console.log(JSON.stringify(sheetNames));
-               
+        // console.log(JSON.stringify(sheetNames));
+
         sheetNames.forEach(function(v,i,a) {
           for(var c=0; c<=letters.indexOf(sheets[v]); c++) {
             returnString += buildOption(compareCol,v,i,c,letters[c]);
@@ -148,10 +164,10 @@
         htmlString += "<div class='box'><div class='title'>" + results.local.sheet + " " + results.local.col + "</div>";
         htmlString += drawResult("Duplicate Entries",results.local.dups,"dups");
         htmlString += drawResult("Unique Entries",results.local.uniq,"uniques");
-        htmlString += drawResult("Shared Entries",results.local.shared,"shared");        
+        htmlString += drawResult("Shared Entries",results.local.shared,"shared");
         htmlString += "</div>";
         htmlString += "</div>";
-        resultsBox.insertAdjacentHTML('beforeend',htmlString);        
+        resultsBox.insertAdjacentHTML('beforeend',htmlString);
       }
       function clearResults() {
         document.getElementById("results_box").innerHTML = "";
