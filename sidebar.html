@@ -59,7 +59,7 @@
         font-size: 0.9em;
         vertical-align: middle;
       }
-      input.compare_button {
+      input#compare_button {
         background: #4d90fe;
         color: white;
         width: 60%;
@@ -72,7 +72,10 @@
   <body>
     <form id="aForm">
       <div id="control_box"></div>
-      <input type="button" class="compare_button" value="Compare" onClick="handleFormSubmit()"/><input type="button" id="clear_button" value="Clear" onClick="clearResults()" disabled/>
+      <div id="button_box">
+        <input type="button" id="compare_button" value="Compare" onClick="handleFormSubmit()"/>
+        <input type="button" id="clear_button" value="Clear" onClick="clearResults()" disabled/>
+      </div>
       <div id="results_box"></div>
     </form>
     <script>
