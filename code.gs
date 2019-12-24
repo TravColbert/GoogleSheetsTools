@@ -198,13 +198,11 @@ function compare(sheet1,col1,skip1,sheet2,col2,skip2) {
   return results;
 }
 function getSheets() {
-  // Logger.log("Getting sheet list");
   // Then we have to get the columns
   var sheets = {};
   var sheetNames = [];
   var letterRe = /:([A-Z]*)/;
   SpreadsheetApp.getActiveSpreadsheet().getSheets().forEach(function(v,i,a) {
-    //// Logger.log("Sheet " + i + ": " + v.getSheetName() + "\n");
     var sheetName = v.getSheetName();
     var sheetColumns = v.getDataRange().getA1Notation();
     // Get just the letter-part (not interested in rows)
@@ -215,6 +213,9 @@ function getSheets() {
   });
   return sheets;
 }
+/**
+ * Build sidebar UI
+ */
 function buildSidebarCompare() {
   var htmlString = HtmlService.createHtmlOutputFromFile("sidebar")
     .setTitle('Compare Sheets and Columns')
