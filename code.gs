@@ -237,6 +237,9 @@ function main() {
     .addItem("Functions","buildSidebarFunctions")
     .addToUi();
 }
-function onOpen() {
-  main();
+function onInstall (e) {
+  onOpen()
+}
+function onOpen () {
+  main()
 }
