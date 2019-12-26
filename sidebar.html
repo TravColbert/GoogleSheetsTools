@@ -83,17 +83,29 @@
       input#clear_button {
         width: 40%;
       }
+      .branding-below {
+        bottom: 56px;
+        top: 0;
+      }
     </style>
   </head>
   <body>
-    <form id="compareForm">
-      <div id="control_box" class="column"></div>
-      <div id="button_box">
-        <input type="button" id="compare_button" value="Compare" onClick="handleFormSubmit()"/>
-        <input type="button" id="clear_button" value="Clear" onClick="clearResults()" disabled/>
+    <div class="sidebar branding-below">
+      <div class="block">
+        <form id="compareForm">
+          <div id="control_box" class="column"></div>
+          <div id="button_box">
+            <input type="button" id="compare_button" value="Compare" onClick="handleFormSubmit()"/>
+            <input type="button" id="clear_button" value="Clear" onClick="clearResults()" disabled/>
+          </div>
+          <div id="results_box"></div>
+        </form>
       </div>
-      <div id="results_box"></div>
-    </form>
+    </div>
+    <div class="sidebar bottom">
+      <span class="gray">Sheets Tools</span>
+      <a href="https://traviscolbert.net">traviscolbert.net</a>
+    </div>
     <script>
       function setupForm() {
         google.script.run.withSuccessHandler(updateSheetLists).getSheets();
